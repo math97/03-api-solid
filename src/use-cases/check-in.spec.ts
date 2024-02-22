@@ -19,8 +19,8 @@ describe('Check-in Use Case', () => {
       title: 'JavaScript Gym',
       description: '',
       phone: '',
-      latitude: new Decimal(0),
-      longitude: new Decimal(0),
+      latitude: new Decimal(38.7244881),
+      longitude: new Decimal(-9.1913004),
     })
 
     vi.useFakeTimers()
@@ -30,9 +30,7 @@ describe('Check-in Use Case', () => {
     vi.useRealTimers()
   })
 
-  // 38.7244881,-9.1913004,13
   it('should be able to check in', async () => {
-    vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0))
     const { checkIn } = await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
@@ -41,6 +39,17 @@ describe('Check-in Use Case', () => {
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
+  })
+
+  it('should not be able to check in on distant gym', async () => {
+    await expect(() =>
+      sut.execute({
+        gymId: 'gym-02',
+        userId: 'user-01',
+        userLatitude: 38.9232908,
+        userLongitude: -9.128977,
+      }),
+    ).rejects.toBeInstanceOf(Error)
   })
 
   it('should not be able to check in twice in the same day', async () => {
